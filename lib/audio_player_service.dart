@@ -73,7 +73,7 @@ class AudioPlayerService {
       await provider.doPlay();
     } else if (currentState.value == AudioPlayerState.Completed) {
       if (currentTrack.value != null) {
-        await provider.doChangeById(currentTrack.value!.id);
+        await provider.doChangeById(currentTrack.value!.uri);
       }
     }
   }
@@ -91,7 +91,7 @@ class AudioPlayerService {
   }
 
   Future<void> changeByTrack(AudioTrack track) async {
-    await changeByTrackId(track.id);
+    await changeByTrackId(track.uri);
   }
 
   Future<void> changeByTrackId(String id) async {

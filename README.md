@@ -41,3 +41,9 @@ Insert this in your Info.plist file
 
 Init player
 
+```dart
+await QsAudio.init(
+    channelId: 'qs_audio_service_example',
+);
+```
+

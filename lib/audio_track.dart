@@ -7,10 +7,10 @@ const kSourceJsonKey = "sourceJson";
 const kAlbumSourceJsonKey = "albumSourceJson";
 
 class AudioTrack {
-  final String id;
   final String uri;
   final String title;
   final Duration? duration;
+  final String? key;
   final String? album;
   final String? artist;
   final String? artUri;
@@ -23,11 +23,11 @@ class AudioTrack {
   final String? albumSourceJson;
 
   AudioTrack({
-    required this.id,
     required this.uri,
     required this.title,
     required this.album,
     required this.duration,
+    this.key,
     this.artist,
     this.artUri,
     this.albumId,
@@ -41,13 +41,14 @@ class AudioTrack {
       AudioSource.uri(Uri.parse(uri), tag: toMediaItem());
 
   MediaItem toMediaItem() => MediaItem(
-        id: id,
+        id: uri,
         title: title,
         album: album ?? '',
         duration: duration ?? Duration.zero,
         artist: artist,
         artUri: artUri != null ? Uri.parse(artUri!) : null,
         extras: {
+          'key': key,
           'uri': uri,
           if (albumId != null) kAlbumId: albumId,
           if (albumType != null) kAlbumType: albumType,
@@ -58,11 +59,11 @@ class AudioTrack {
       );
 
   static AudioTrack fromMediaItem(MediaItem item) => AudioTrack(
-        id: item.id,
         uri: item.extras?['uri'],
         title: item.title,
         album: item.album,
         duration: item.duration,
+        key: item.extras?['key'],
         artist: item.artist,
         artUri: item.artUri?.toString(),
         albumId: item.extras?[kAlbumId],
