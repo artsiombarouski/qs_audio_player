@@ -34,11 +34,15 @@ class _MyAppState extends State<MyApp> {
             children: [
               TextButton(
                 onPressed: () {
-                  AudioPlayerService.instance
-                      .setQueue(testQueue1)
-                      .then((value) => QsAudio.instance.play());
+                  AudioPlayerService.instance.setSource(testQueue1);
                 },
                 child: Text("Set queue"),
+              ),
+              TextButton(
+                onPressed: () {
+                  AudioPlayerService.instance.setSource(testQueue2);
+                },
+                child: Text("Set queue 2"),
               ),
               QsAudioStateWidget(
                 builder: (BuildContext context, AudioPlayerState value,
@@ -93,21 +97,22 @@ class _MyAppState extends State<MyApp> {
                     children: [
                       if (value != null)
                         ...value.map(
-                          (e) => InkWell(
-                            onTap: () {
-                              QsAudio.instance.changeByTrack(e);
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
-                              constraints: BoxConstraints(minHeight: 48),
-                              child: Row(
-                                children: [
-                                  Text("${e.title}"),
-                                  Text("${e.album}"),
-                                ],
+                              (e) =>
+                              InkWell(
+                                onTap: () {
+                                  QsAudio.instance.changeByTrack(e);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 8),
+                                  constraints: BoxConstraints(minHeight: 48),
+                                  child: Row(
+                                    children: [
+                                      Text("${e.title}"),
+                                      Text("${e.album}"),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
                         ),
                     ],
                   );

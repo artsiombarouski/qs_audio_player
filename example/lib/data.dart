@@ -25,3 +25,13 @@ final testQueue1 = <AudioTrack>[
         .toString(),
   ),
 ];
+
+final testQueue2 = <AudioTrack>[
+  AudioTrack(
+    uri:
+        "https://firebasestorage.googleapis.com/v0/b/waves-stories-1.appspot.com/o/stories%2Fchickago-blus.mp3?alt=media&token=3aee8e0e-d9d2-41f9-be7f-b0eb73d233b2",
+    title: "Test title",
+    album: "Test album",
+    duration: Duration.zero,
+  ),
+];

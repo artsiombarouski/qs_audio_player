@@ -114,8 +114,8 @@ class JustAudioProvider with AudioPlayerProvider {
   }
 
   @override
-  Future<void> doSetQueue(List<AudioTrack> tracks) async {
-    await _handler.updateQueue(tracks.map((e) => e.toMediaItem()).toList());
+  Future<void> doSetSource(List<AudioTrack> tracks) async {
+    await _handler.setSource(tracks.map((e) => e.toMediaItem()).toList());
   }
 
   @override
@@ -191,6 +191,8 @@ abstract class AudioPlayerHandler implements AudioHandler {
   Future<void> skipToMediaItem(String itemId);
 
   ValueStream<Duration?> get duration;
+
+  Future<void> setSource(List<MediaItem> queue);
 }
 
 class JustAudioHandler extends BaseAudioHandler
@@ -207,7 +209,7 @@ class JustAudioHandler extends BaseAudioHandler
   final BehaviorSubject<Duration?> duration = BehaviorSubject.seeded(null);
 
   final _player = AudioPlayer();
-  final _playlist = ConcatenatingAudioSource(children: []);
+  var _playlist = ConcatenatingAudioSource(children: []);
 
   JustAudioHandler() {
     _init();
@@ -221,7 +223,6 @@ class JustAudioHandler extends BaseAudioHandler
     speed.debounceTime(const Duration(milliseconds: 250)).listen((speed) {
       playbackState.add(playbackState.value.copyWith(speed: speed));
     });
-    //TODO: restore previous items here
     // For Android 11, record the most recent item so it can be resumed.
     mediaItem
         .whereType<MediaItem>()
@@ -325,12 +326,12 @@ class JustAudioHandler extends BaseAudioHandler
           state.queue.length == state.shuffleIndices!.length);
 
   @override
-  Future<void> setShuffleMode(AudioServiceShuffleMode mode) async {
-    final enabled = mode == AudioServiceShuffleMode.all;
+  Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) async {
+    final enabled = shuffleMode == AudioServiceShuffleMode.all;
     if (enabled) {
       await _player.shuffle();
     }
-    playbackState.add(playbackState.value.copyWith(shuffleMode: mode));
+    playbackState.add(playbackState.value.copyWith(shuffleMode: shuffleMode));
     await _player.setShuffleModeEnabled(enabled);
   }
 
@@ -392,9 +393,16 @@ class JustAudioHandler extends BaseAudioHandler
   }
 
   @override
-  Future<void> updateQueue(List<MediaItem> newQueue) async {
-    await _playlist.clear();
-    await _playlist.addAll(_itemsToSources(newQueue));
+  Future<void> updateQueue(List<MediaItem> queue) async {
+    await _playlist.addAll(_itemsToSources(queue));
+  }
+
+  @override
+  Future<void> setSource(List<MediaItem> queue) async {
+    final newSource =
+        ConcatenatingAudioSource(children: _itemsToSources(queue));
+    _playlist = newSource;
+    await _player.setAudioSource(_playlist);
   }
 
   @override
@@ -438,13 +446,19 @@ class JustAudioHandler extends BaseAudioHandler
   }
 
   @override
-  Future<void> play() => _player.play();
+  Future<void> play() async {
+    await _player.play();
+  }
 
   @override
-  Future<void> pause() => _player.pause();
+  Future<void> pause() async {
+    _player.pause();
+  }
 
   @override
-  Future<void> seek(Duration position) => _player.seek(position);
+  Future<void> seek(Duration position) async {
+    await _player.seek(position);
+  }
 
   @override
   Future<void> stop() async {
@@ -457,7 +471,10 @@ class JustAudioHandler extends BaseAudioHandler
   void _broadcastState(PlaybackEvent event) {
     final playing = _player.playing;
     final queueIndex = getQueueIndex(
-        event.currentIndex, _player.shuffleModeEnabled, _player.shuffleIndices);
+      event.currentIndex,
+      _player.shuffleModeEnabled,
+      _player.shuffleIndices,
+    );
     playbackState.add(playbackState.value.copyWith(
       controls: [
         MediaControl.skipToPrevious,

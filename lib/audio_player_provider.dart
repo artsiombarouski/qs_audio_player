@@ -13,7 +13,7 @@ mixin AudioPlayerProvider {
 
   Future<void> init();
 
-  Future<void> doSetQueue(List<AudioTrack> tracks);
+  Future<void> doSetSource(List<AudioTrack> tracks);
 
   Future<void> doPlay();
 

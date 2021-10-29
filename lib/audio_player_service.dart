@@ -43,16 +43,24 @@ class AudioPlayerService {
     }
   }
 
-  Future<void> setQueue(
+  Future<void> setSource(
     List<AudioTrack> tracks, {
     bool start = true,
     String? initialTrackId,
   }) async {
     await provider.init();
-    await provider.doSetQueue(tracks);
+    if (provider.currentStateStream.value != AudioPlayerState.Idle) {
+      await pause();
+    }
+    await provider.doSetSource(tracks);
     if (initialTrackId != null) {
       await changeByTrackId(initialTrackId);
     }
+    // else if (tracks.isNotEmpty) {
+    //   await changeByTrack(tracks[0]);
+    // } else {
+    //   await stop();
+    // }
     if (start) {
       await play();
     }
