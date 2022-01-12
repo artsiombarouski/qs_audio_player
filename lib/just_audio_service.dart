@@ -36,7 +36,7 @@ class JustAudioProvider with AudioPlayerProvider {
       config: AudioServiceConfig(
         androidNotificationChannelId: channelId,
         androidNotificationChannelName: channelName,
-        androidNotificationOngoing: true,
+        androidNotificationOngoing: false,
       ),
     );
     currentQueueStream.value =
@@ -463,24 +463,26 @@ class JustAudioHandler extends BaseAudioHandler
   @override
   Future<void> stop() async {
     await _player.stop();
-    await playbackState.firstWhere(
-        (state) => state.processingState == AudioProcessingState.idle);
+    super.stop();
   }
 
   /// Broadcasts the current state to all clients.
   void _broadcastState(PlaybackEvent event) {
     final playing = _player.playing;
     final queueIndex = getQueueIndex(
-      event.currentIndex,
-      _player.shuffleModeEnabled,
-      _player.shuffleIndices,
-    );
+          event.currentIndex,
+          _player.shuffleModeEnabled,
+          _player.shuffleIndices,
+        ) ??
+        0;
+    final hasPrevious = queueIndex > 0;
+    final hasNext = queueIndex < (queue.value.length - 1);
     playbackState.add(playbackState.value.copyWith(
       controls: [
-        MediaControl.skipToPrevious,
+        if (hasPrevious) MediaControl.skipToPrevious,
         if (playing) MediaControl.pause else MediaControl.play,
         MediaControl.stop,
-        MediaControl.skipToNext,
+        if (hasNext) MediaControl.skipToNext,
       ],
       systemActions: const {
         MediaAction.seek,

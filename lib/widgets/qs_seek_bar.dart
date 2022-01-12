@@ -2,7 +2,6 @@ import 'dart:math';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class QsSeekBar extends StatefulWidget {
   final Duration duration;
@@ -12,14 +11,15 @@ class QsSeekBar extends StatefulWidget {
   final ValueChanged<Duration>? onChangeEnd;
   final bool showTimers;
 
-  QsSeekBar({
+  const QsSeekBar({
+    Key? key,
     required this.duration,
     required this.position,
     required this.bufferedPosition,
     this.onChanged,
     this.onChangeEnd,
     this.showTimers = true,
-  });
+  }) : super(key: key);
 
   @override
   _QsSeekBarState createState() => _QsSeekBarState();

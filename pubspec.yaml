@@ -1,6 +1,6 @@
 name: qs_audio_player
 description: QS Audio Player
-version: 0.0.2
+version: 0.0.3
 homepage:
 
 environment:
@@ -10,9 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  audio_service: ^0.18.1
+  audio_service: ^0.18.3
   audio_session: ^0.1.6+1
-  just_audio: ^0.9.14
+  just_audio: ^0.9.18
 
 dev_dependencies:
   flutter_test:
