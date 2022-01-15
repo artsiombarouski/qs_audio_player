@@ -6,7 +6,7 @@ const kAlbumType = "albumType";
 const kSourceJsonKey = "sourceJson";
 const kAlbumSourceJsonKey = "albumSourceJson";
 
-class AudioTrack {
+class QsAudioTrack {
   final String uri;
   final String title;
   final Duration? duration;
@@ -22,7 +22,7 @@ class AudioTrack {
   final String? sourceJson;
   final String? albumSourceJson;
 
-  AudioTrack({
+  QsAudioTrack({
     required this.uri,
     required this.title,
     required this.album,
@@ -58,7 +58,7 @@ class AudioTrack {
         },
       );
 
-  static AudioTrack fromMediaItem(MediaItem item) => AudioTrack(
+  static QsAudioTrack fromMediaItem(MediaItem item) => QsAudioTrack(
         uri: item.extras?['uri'],
         title: item.title,
         album: item.album,

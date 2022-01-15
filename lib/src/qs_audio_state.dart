@@ -1,22 +1,22 @@
-enum AudioPlayerState {
+enum QsAudioState {
   /// The player has not loaded.
-  Idle,
+  idle,
 
   /// The player is loading.
-  Loading,
+  loading,
 
   /// The player is buffering audio and unable to play.
-  Buffering,
+  buffering,
 
   /// The player is playing
-  Playing,
+  playing,
 
   /// The player is paused
-  Paused,
+  paused,
 
   /// The player has reached the end of the audio.
-  Completed,
+  completed,
 
   /// The player received error
-  Error,
+  error,
 }

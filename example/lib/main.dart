@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qs_audio_player/qs_audio_player.dart';
+import 'package:qs_audio_player/qs_audio.dart';
 import 'package:qs_audio_player_example/data.dart';
 
 Future<void> main() async {
@@ -34,26 +34,26 @@ class _MyAppState extends State<MyApp> {
             children: [
               TextButton(
                 onPressed: () {
-                  AudioPlayerService.instance.setSource(testQueue1);
+                  QsAudio.instance.setSource(testQueue1);
                 },
                 child: Text("Set queue"),
               ),
               TextButton(
                 onPressed: () {
-                  AudioPlayerService.instance.setSource(testQueue2);
+                  QsAudio.instance.setSource(testQueue2);
                 },
                 child: Text("Set queue 2"),
               ),
               QsAudioStateWidget(
-                builder: (BuildContext context, AudioPlayerState value,
-                    Widget? child) {
+                builder:
+                    (BuildContext context, QsAudioState value, Widget? child) {
                   return Text("state: $value");
                 },
               ),
               QsAudioStateWidget(
                 builder: (context, state, child) {
-                  bool isPlaying = state == AudioPlayerState.Playing ||
-                      state == AudioPlayerState.Paused;
+                  bool isPlaying = state == QsAudioState.playing ||
+                      state == QsAudioState.paused;
                   return IgnorePointer(
                     ignoring: !isPlaying,
                     child: Opacity(
@@ -62,7 +62,7 @@ class _MyAppState extends State<MyApp> {
                         onPressed: () {
                           QsAudio.instance.toggle();
                         },
-                        icon: Icon(state == AudioPlayerState.Playing
+                        icon: Icon(state == QsAudioState.playing
                             ? Icons.pause_rounded
                             : Icons.play_arrow_rounded),
                         label: Text("$state"),
@@ -77,7 +77,7 @@ class _MyAppState extends State<MyApp> {
                 },
               ),
               QsAudioPositionWidget(
-                builder: (BuildContext context, AudioPlayerPosition? value,
+                builder: (BuildContext context, QsAudioPosition? value,
                     Widget? child) {
                   if (value == null || value.isReady == false) {
                     return Container();
@@ -97,22 +97,21 @@ class _MyAppState extends State<MyApp> {
                     children: [
                       if (value != null)
                         ...value.map(
-                              (e) =>
-                              InkWell(
-                                onTap: () {
-                                  QsAudio.instance.changeByTrack(e);
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(vertical: 8),
-                                  constraints: BoxConstraints(minHeight: 48),
-                                  child: Row(
-                                    children: [
-                                      Text("${e.title}"),
-                                      Text("${e.album}"),
-                                    ],
-                                  ),
-                                ),
+                          (e) => InkWell(
+                            onTap: () {
+                              QsAudio.instance.changeByTrack(e);
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              constraints: BoxConstraints(minHeight: 48),
+                              child: Row(
+                                children: [
+                                  Text("${e.title}"),
+                                  Text("${e.album}"),
+                                ],
                               ),
+                            ),
+                          ),
                         ),
                     ],
                   );

@@ -1,14 +1,14 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 
-class AudioSeeker {
+class QsAudioSeeker {
   final AudioPlayer player;
   final Duration positionInterval;
   final Duration stepInterval;
   final MediaItem mediaItem;
   bool _running = false;
 
-  AudioSeeker(
+  QsAudioSeeker(
     this.player,
     this.positionInterval,
     this.stepInterval,

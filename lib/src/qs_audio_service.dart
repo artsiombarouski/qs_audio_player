@@ -1,26 +1,22 @@
 import 'package:flutter/widgets.dart';
-import 'package:qs_audio_player/audio_player_position.dart';
-import 'package:qs_audio_player/audio_player_provider.dart';
-import 'package:qs_audio_player/audio_player_state.dart';
-import 'package:qs_audio_player/audio_track.dart';
+import 'package:qs_audio_player/src/qs_audio_position.dart';
+import 'package:qs_audio_player/src/qs_audio_provider.dart';
+import 'package:qs_audio_player/src/qs_audio_state.dart';
+import 'package:qs_audio_player/src/qs_audio_track.dart';
 
-class AudioPlayerService {
-  static late AudioPlayerService instance;
-
-  final ValueNotifier<List<AudioTrack>?> currentQueue = ValueNotifier(null);
-  final ValueNotifier<AudioTrack?> currentTrack = ValueNotifier(null);
-  final ValueNotifier<AudioPlayerState> currentState = ValueNotifier(
-    AudioPlayerState.Idle,
+class QsAudioService {
+  final ValueNotifier<List<QsAudioTrack>?> currentQueue = ValueNotifier(null);
+  final ValueNotifier<QsAudioTrack?> currentTrack = ValueNotifier(null);
+  final ValueNotifier<QsAudioState> currentState = ValueNotifier(
+    QsAudioState.idle,
   );
-  final ValueNotifier<AudioPlayerPosition?> currentPosition = ValueNotifier(
-    null,
-  );
+  final ValueNotifier<QsAudioPosition?> currentPosition = ValueNotifier(null);
 
-  final AudioPlayerProvider provider;
+  final QsAudioProvider provider;
 
-  AudioPlayerService({required this.provider});
+  QsAudioService({required this.provider});
 
-  Future<void> init({bool singleton = true}) async {
+  Future<void> init() async {
     await provider.init();
     currentTrack.value = provider.currentTrackStream.valueOrNull;
     provider.currentTrackStream.listen((value) {
@@ -38,18 +34,15 @@ class AudioPlayerService {
     provider.currentPositionStream.listen((value) {
       currentPosition.value = value;
     });
-    if (singleton) {
-      instance = this;
-    }
   }
 
   Future<void> setSource(
-    List<AudioTrack> tracks, {
+    List<QsAudioTrack> tracks, {
     bool start = true,
     String? initialTrackId,
   }) async {
     await provider.init();
-    if (provider.currentStateStream.value != AudioPlayerState.Idle) {
+    if (provider.currentStateStream.value != QsAudioState.idle) {
       await pause();
     }
     await provider.doSetSource(tracks);
@@ -75,11 +68,11 @@ class AudioPlayerService {
   }
 
   Future<void> toggle() async {
-    if (currentState.value == AudioPlayerState.Playing) {
+    if (currentState.value == QsAudioState.playing) {
       await provider.doPause();
-    } else if (currentState.value == AudioPlayerState.Paused) {
+    } else if (currentState.value == QsAudioState.paused) {
       await provider.doPlay();
-    } else if (currentState.value == AudioPlayerState.Completed) {
+    } else if (currentState.value == QsAudioState.completed) {
       if (currentTrack.value != null) {
         await provider.doChangeById(currentTrack.value!.uri);
       }
@@ -98,12 +91,20 @@ class AudioPlayerService {
     await provider.doRewind(time);
   }
 
-  Future<void> changeByTrack(AudioTrack track) async {
+  Future<void> changeByTrack(QsAudioTrack track) async {
     await changeByTrackId(track.uri);
   }
 
   Future<void> changeByTrackId(String id) async {
     await provider.doChangeById(id);
+  }
+
+  Future<void> skipToNext() async {
+    await provider.skipToNext();
+  }
+
+  Future<void> skipToPrevious() async {
+    await provider.skipToPrevious();
   }
 
   Future<void> stop() async {

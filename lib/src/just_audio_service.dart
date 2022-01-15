@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:qs_audio_player/audio_player_position.dart';
-import 'package:qs_audio_player/audio_player_provider.dart';
-import 'package:qs_audio_player/audio_player_state.dart';
-import 'package:qs_audio_player/audio_track.dart';
+import 'package:qs_audio_player/src/qs_audio_position.dart';
+import 'package:qs_audio_player/src/qs_audio_provider.dart';
+import 'package:qs_audio_player/src/qs_audio_state.dart';
+import 'package:qs_audio_player/src/qs_audio_track.dart';
 import 'package:rxdart/rxdart.dart';
 
-class JustAudioProvider with AudioPlayerProvider {
+class JustAudioProvider with QsAudioProvider {
   /// Provider impls
 
   bool _isInitialized = false;
@@ -23,7 +23,10 @@ class JustAudioProvider with AudioPlayerProvider {
   final String channelId;
   final String channelName;
 
-  JustAudioProvider({required this.channelId, required this.channelName});
+  JustAudioProvider({
+    required this.channelId,
+    required this.channelName,
+  });
 
   @override
   Future<void> init() async {
@@ -40,19 +43,19 @@ class JustAudioProvider with AudioPlayerProvider {
       ),
     );
     currentQueueStream.value =
-        _handler.queue.value.map((e) => AudioTrack.fromMediaItem(e)).toList();
+        _handler.queue.value.map((e) => QsAudioTrack.fromMediaItem(e)).toList();
     _queueSubscription = _handler.queueState.listen((event) {});
     _queueSubscription = _handler.queue.listen((event) {
       currentQueueStream.value =
-          event.map((e) => AudioTrack.fromMediaItem(e)).toList();
+          event.map((e) => QsAudioTrack.fromMediaItem(e)).toList();
     });
 
     currentTrackStream.value = _handler.mediaItem.value != null
-        ? AudioTrack.fromMediaItem(_handler.mediaItem.value!)
+        ? QsAudioTrack.fromMediaItem(_handler.mediaItem.value!)
         : null;
     _trackSubscription = _handler.mediaItem.listen((event) {
       currentTrackStream.value =
-          event != null ? AudioTrack.fromMediaItem(event) : null;
+          event != null ? QsAudioTrack.fromMediaItem(event) : null;
     });
     await _syncPlayerState();
     _playbackSubscription = _handler.playbackState.listen((event) {
@@ -78,27 +81,26 @@ class JustAudioProvider with AudioPlayerProvider {
     }
     final playbackState = _handler.playbackState.value;
     final processingState = playbackState.processingState;
-    late AudioPlayerState currentState;
+    late QsAudioState currentState;
     switch (processingState) {
       case AudioProcessingState.idle:
-        currentState = AudioPlayerState.Idle;
+        currentState = QsAudioState.idle;
         break;
       case AudioProcessingState.error:
-        currentState = AudioPlayerState.Error;
+        currentState = QsAudioState.error;
         break;
       case AudioProcessingState.buffering:
-        currentState = AudioPlayerState.Buffering;
+        currentState = QsAudioState.buffering;
         break;
       case AudioProcessingState.ready:
-        currentState = playbackState.playing
-            ? AudioPlayerState.Playing
-            : AudioPlayerState.Paused;
+        currentState =
+            playbackState.playing ? QsAudioState.playing : QsAudioState.paused;
         break;
       case AudioProcessingState.completed:
-        currentState = AudioPlayerState.Completed;
+        currentState = QsAudioState.completed;
         break;
       case AudioProcessingState.loading:
-        currentState = AudioPlayerState.Loading;
+        currentState = QsAudioState.loading;
         break;
     }
     currentStateStream.value = currentState;
@@ -106,7 +108,7 @@ class JustAudioProvider with AudioPlayerProvider {
     if (duration == null || duration == Duration.zero) {
       duration = _handler.duration.value;
     }
-    currentPositionStream.value = AudioPlayerPosition(
+    currentPositionStream.value = QsAudioPosition(
       duration: duration,
       bufferedPosition: playbackState.bufferedPosition,
       position: playbackState.position,
@@ -114,7 +116,7 @@ class JustAudioProvider with AudioPlayerProvider {
   }
 
   @override
-  Future<void> doSetSource(List<AudioTrack> tracks) async {
+  Future<void> doSetSource(List<QsAudioTrack> tracks) async {
     await _handler.setSource(tracks.map((e) => e.toMediaItem()).toList());
   }
 
@@ -146,6 +148,16 @@ class JustAudioProvider with AudioPlayerProvider {
   @override
   Future<void> doSeekTo(Duration position) async {
     await _handler.seek(position);
+  }
+
+  @override
+  Future<void> skipToNext() async {
+    await _handler.skipToNext();
+  }
+
+  @override
+  Future<void> skipToPrevious() async {
+    await _handler.skipToPrevious();
   }
 
   @override

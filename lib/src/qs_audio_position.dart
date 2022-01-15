@@ -1,9 +1,9 @@
-class AudioPlayerPosition {
+class QsAudioPosition {
   final Duration? duration;
   final Duration position;
   final Duration bufferedPosition;
 
-  AudioPlayerPosition({
+  QsAudioPosition({
     this.duration,
     this.position = Duration.zero,
     this.bufferedPosition = Duration.zero,
