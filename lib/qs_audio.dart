@@ -22,7 +22,7 @@ class QsAudio {
     _instance = QsAudioService(
       provider: JustAudioProvider(
         channelId: channelId,
-        channelName: channelId,
+        channelName: channelName ?? channelId,
       ),
     );
     return _instance.init();

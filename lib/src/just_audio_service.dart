@@ -18,6 +18,7 @@ class JustAudioProvider with QsAudioProvider {
   late StreamSubscription _queueSubscription;
   late StreamSubscription _trackSubscription;
   late StreamSubscription _playbackSubscription;
+  late StreamSubscription _durationSubscription;
   late StreamSubscription _positionSubscription;
 
   final String channelId;
@@ -49,7 +50,6 @@ class JustAudioProvider with QsAudioProvider {
       currentQueueStream.value =
           event.map((e) => QsAudioTrack.fromMediaItem(e)).toList();
     });
-
     currentTrackStream.value = _handler.mediaItem.value != null
         ? QsAudioTrack.fromMediaItem(_handler.mediaItem.value!)
         : null;
@@ -59,6 +59,9 @@ class JustAudioProvider with QsAudioProvider {
     });
     await _syncPlayerState();
     _playbackSubscription = _handler.playbackState.listen((event) {
+      _syncPlayerState();
+    });
+    _durationSubscription = _handler.duration.listen((event) {
       _syncPlayerState();
     });
     _positionSubscription = AudioService.position.listen((event) {
@@ -71,6 +74,7 @@ class JustAudioProvider with QsAudioProvider {
     await super.dispose();
     await _queueSubscription.cancel();
     await _trackSubscription.cancel();
+    await _durationSubscription.cancel();
     await _playbackSubscription.cancel();
     await _positionSubscription.cancel();
   }
@@ -104,9 +108,9 @@ class JustAudioProvider with QsAudioProvider {
         break;
     }
     currentStateStream.value = currentState;
-    var duration = _handler.mediaItem.value?.duration;
+    var duration = _handler.duration.value;
     if (duration == null || duration == Duration.zero) {
-      duration = _handler.duration.value;
+      duration = _handler.mediaItem.value?.duration;
     }
     currentPositionStream.value = QsAudioPosition(
       duration: duration,
@@ -230,11 +234,7 @@ class JustAudioHandler extends BaseAudioHandler
   Future<void> _init() async {
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.music());
-    // Broadcast speed changes. Debounce so that we don't flood the notification
-    // with updates.
-    speed.debounceTime(const Duration(milliseconds: 250)).listen((speed) {
-      playbackState.add(playbackState.value.copyWith(speed: speed));
-    });
+
     // For Android 11, record the most recent item so it can be resumed.
     mediaItem
         .whereType<MediaItem>()

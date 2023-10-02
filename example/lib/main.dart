@@ -102,12 +102,13 @@ class _MyAppState extends State<MyApp> {
                               QsAudio.instance.changeByTrack(e);
                             },
                             child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
-                              constraints: BoxConstraints(minHeight: 48),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              constraints: const BoxConstraints(minHeight: 48),
                               child: Row(
                                 children: [
                                   Text("${e.title}"),
-                                  Text("${e.album}"),
+                                  Expanded(child: Text("${e.album}")),
                                 ],
                               ),
                             ),
