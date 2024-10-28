@@ -25,7 +25,9 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 34
+
+    namespace "io.qs.audio_player.qs_audio_player"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

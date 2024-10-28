@@ -8,11 +8,11 @@ abstract class QsAudioServiceWidgetWrapper<T> extends StatefulWidget {
   final Widget? child;
 
   const QsAudioServiceWidgetWrapper({
-    Key? key,
+    super.key,
     required this.builder,
     this.service,
     this.child,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() => QsAudioServiceWidgetWrapperState<T>();
@@ -38,11 +38,11 @@ class QsAudioServiceWidgetWrapperState<T>
 
 class QsAudioStateWidget extends QsAudioServiceWidgetWrapper<QsAudioState> {
   const QsAudioStateWidget({
-    Key? key,
-    required ValueWidgetBuilder<QsAudioState> builder,
-    QsAudioService? service,
-    Widget? child,
-  }) : super(key: key, builder: builder, service: service, child: child);
+    super.key,
+    required super.builder,
+    super.service,
+    super.child,
+  });
 
   @override
   ValueListenable<QsAudioState> getListenable(QsAudioService service) =>
@@ -51,11 +51,11 @@ class QsAudioStateWidget extends QsAudioServiceWidgetWrapper<QsAudioState> {
 
 class QsAudioTrackWidget extends QsAudioServiceWidgetWrapper<QsAudioTrack?> {
   const QsAudioTrackWidget({
-    Key? key,
-    required ValueWidgetBuilder<QsAudioTrack?> builder,
-    QsAudioService? service,
-    Widget? child,
-  }) : super(key: key, builder: builder, service: service, child: child);
+    super.key,
+    required super.builder,
+    super.service,
+    super.child,
+  });
 
   @override
   ValueListenable<QsAudioTrack?> getListenable(QsAudioService service) =>
@@ -65,11 +65,11 @@ class QsAudioTrackWidget extends QsAudioServiceWidgetWrapper<QsAudioTrack?> {
 class QsAudioQueueWidget
     extends QsAudioServiceWidgetWrapper<List<QsAudioTrack>?> {
   const QsAudioQueueWidget({
-    Key? key,
-    required ValueWidgetBuilder<List<QsAudioTrack>?> builder,
-    QsAudioService? service,
-    Widget? child,
-  }) : super(key: key, builder: builder, service: service, child: child);
+    super.key,
+    required super.builder,
+    super.service,
+    super.child,
+  });
 
   @override
   ValueListenable<List<QsAudioTrack>?> getListenable(QsAudioService service) =>
@@ -79,11 +79,11 @@ class QsAudioQueueWidget
 class QsAudioPositionWidget
     extends QsAudioServiceWidgetWrapper<QsAudioPosition?> {
   const QsAudioPositionWidget({
-    Key? key,
-    required ValueWidgetBuilder<QsAudioPosition?> builder,
-    QsAudioService? service,
-    Widget? child,
-  }) : super(key: key, builder: builder, service: service, child: child);
+    super.key,
+    required super.builder,
+    super.service,
+    super.child,
+  });
 
   @override
   ValueListenable<QsAudioPosition?> getListenable(QsAudioService service) =>

@@ -107,7 +107,7 @@ class _MyAppState extends State<MyApp> {
                               constraints: const BoxConstraints(minHeight: 48),
                               child: Row(
                                 children: [
-                                  Text("${e.title}"),
+                                  Text(e.title),
                                   Expanded(child: Text("${e.album}")),
                                 ],
                               ),

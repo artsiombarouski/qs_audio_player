@@ -12,20 +12,20 @@ class QsSeekBar extends StatefulWidget {
   final bool showTimers;
 
   const QsSeekBar({
-    Key? key,
+    super.key,
     required this.duration,
     required this.position,
     required this.bufferedPosition,
     this.onChanged,
     this.onChangeEnd,
     this.showTimers = true,
-  }) : super(key: key);
+  });
 
   @override
-  _QsSeekBarState createState() => _QsSeekBarState();
+  QsSeekBarState createState() => QsSeekBarState();
 }
 
-class _QsSeekBarState extends State<QsSeekBar> {
+class QsSeekBarState extends State<QsSeekBar> {
   static final _timeRegex = RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$');
 
   double? _dragValue;
@@ -54,14 +54,14 @@ class _QsSeekBarState extends State<QsSeekBar> {
           bottom: 0.0,
           child: Text(
               _timeRegex.firstMatch("$_left")?.group(1) ?? '$_remaining',
-              style: Theme.of(context).textTheme.caption),
+              style: Theme.of(context).textTheme.bodySmall),
         ),
         Positioned(
           right: 16.0,
           bottom: 0.0,
           child: Text(
               _timeRegex.firstMatch("$_remaining")?.group(1) ?? '$_remaining',
-              style: Theme.of(context).textTheme.caption),
+              style: Theme.of(context).textTheme.bodySmall),
         ),
       ];
     }
